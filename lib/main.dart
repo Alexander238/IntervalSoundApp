@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:interval_sound/Screens/MainScreen.dart';
+import 'package:interval_sound/Screens/ListScreen.dart';
 import 'Design/ThemeData.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: mainTheme,
       title: 'Timer App',
-      home: MainScreen(),
+      home: ListScreen(),
     );
   }
 }
