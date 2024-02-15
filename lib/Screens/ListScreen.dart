@@ -45,12 +45,47 @@ class _ListScreenState extends State<ListScreen> {
     await prefs.setStringList('saved_timers', savedTimersString);
   }
 
+  void _showDeletePopup(BuildContext context, TimerData timerData) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final centerPosition =
+        overlay.localToGlobal(overlay.size.center(Offset.zero));
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        centerPosition.dx - 100, // Width
+        centerPosition.dy - 100, // Height
+        centerPosition.dx + 100,
+        centerPosition.dy + 100,
+      ),
+      items: [
+        PopupMenuItem(
+          child: const ListTile(
+            leading: Icon(Icons.delete),
+            title: Text('Remove Timer'),
+          ),
+          onTap: () {
+            _deleteTimer(timerData);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _deleteTimer(TimerData timerData) {
+    setState(() {
+      _savedTimers.remove(timerData);
+      _saveTimers();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Timer List'),
+          title: const Text('Timer List'),
         ),
         body: Column(
           children: [
@@ -60,7 +95,9 @@ class _ListScreenState extends State<ListScreen> {
                 itemBuilder: (context, index) {
                   final timerData = _savedTimers[index];
                   return ListTile(
-                    title: Text(timerData.name),
+                    title: timerData.name == ''
+                        ? const Text('- - - - -')
+                        : Text(timerData.name),
                     subtitle:
                         Text('${timerData.minutes}m ${timerData.seconds}s'),
                     onTap: () async {
@@ -72,44 +109,55 @@ class _ListScreenState extends State<ListScreen> {
                           ),
                         ),
                       );
-                      if (updatedTimerData != null) {
-                        setState(() {
-                          //print("NEUE TIEMR: " + timerData.seconds.toString());
-
-                          int timerIndex = _savedTimers.indexOf(timerData);
-                          _savedTimers[timerIndex] = updatedTimerData;
-                          _saveTimers();
-                        });
-                      }
+                      setState(() {
+                        int timerIndex = _savedTimers.indexOf(timerData);
+                        _savedTimers[timerIndex] = updatedTimerData;
+                        _saveTimers();
+                      });
+                    },
+                    onLongPress: () {
+                      _showDeletePopup(context, timerData);
                     },
                   );
                 },
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MainScreen(
-                          timerData:
-                              TimerData(name: '', minutes: 0, seconds: 0),
-                          onSave: (TimerData timer) {
-                            setState(() {
-                              _savedTimers.add(timer);
-                              _saveTimers();
-                            });
-                          },
+
+            // Add Timer
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      TimerData newTimerData =
+                          TimerData(name: '', minutes: 0, seconds: 1);
+                      TimerData? updatedTimerData = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainScreen(
+                            timerData: newTimerData,
+                            onSave: (timer) {
+                              setState(() {
+                                _savedTimers.add(timer);
+                                _saveTimers();
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: Text('Add Timer'),
-                ),
-              ],
+                      );
+                      if (updatedTimerData != null) {
+                        setState(() {
+                          _savedTimers.add(updatedTimerData);
+                          _saveTimers();
+                        });
+                      }
+                    },
+                    child: const Text('New Timer'),
+                  ),
+                ],
+              ),
             )
           ],
         ),
