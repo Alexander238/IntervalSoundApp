@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:interval_sound/Design/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:interval_sound/Screens/MainScreen.dart';
 import '../Structures/TimerData.dart';
@@ -85,7 +86,8 @@ class _ListScreenState extends State<ListScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Timer List'),
+          centerTitle: true,
+          title: const Text('Timer'),
         ),
         body: Column(
           children: [
@@ -94,31 +96,41 @@ class _ListScreenState extends State<ListScreen> {
                 itemCount: _savedTimers.length,
                 itemBuilder: (context, index) {
                   final timerData = _savedTimers[index];
-                  return ListTile(
-                    title: timerData.name == ''
-                        ? const Text('- - - - -')
-                        : Text(timerData.name),
-                    subtitle:
-                        Text('${timerData.minutes}m ${timerData.seconds}s'),
-                    onTap: () async {
-                      TimerData updatedTimerData = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MainScreen(
-                            timerData: timerData,
-                          ),
+                  return Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 20, left: 15, right: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color:
+                              mainTheme.colorScheme.primary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(16.0),
                         ),
-                      );
-                      setState(() {
-                        int timerIndex = _savedTimers.indexOf(timerData);
-                        _savedTimers[timerIndex] = updatedTimerData;
-                        _saveTimers();
-                      });
-                    },
-                    onLongPress: () {
-                      _showDeletePopup(context, timerData);
-                    },
-                  );
+                        child: ListTile(
+                          title: timerData.name == ''
+                              ? const Text('- - - - -')
+                              : Text(timerData.name),
+                          subtitle: Text(
+                              '${timerData.minutes}m ${timerData.seconds}s'),
+                          onTap: () async {
+                            TimerData updatedTimerData = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainScreen(
+                                  timerData: timerData,
+                                ),
+                              ),
+                            );
+                            setState(() {
+                              int timerIndex = _savedTimers.indexOf(timerData);
+                              _savedTimers[timerIndex] = updatedTimerData;
+                              _saveTimers();
+                            });
+                          },
+                          onLongPress: () {
+                            _showDeletePopup(context, timerData);
+                          },
+                        ),
+                      ));
                 },
               ),
             ),
@@ -154,7 +166,10 @@ class _ListScreenState extends State<ListScreen> {
                         });
                       }
                     },
-                    child: const Text('New Timer'),
+                    child: const Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text('New Timer'),
+                    ),
                   ),
                 ],
               ),
