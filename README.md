@@ -1,16 +1,13 @@
 # interval_sound
 
-A new Flutter project.
+Just a little simple app for interval sounds. 
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Creating multiple saves with specific intervals
 
-A few resources to get you started if this is your first Flutter project:
+## ToDos:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Choosing own sounds
+- Different appearances
+- Appearance overhaul
